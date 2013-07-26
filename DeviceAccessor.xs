@@ -79,3 +79,19 @@ getDeviceName( const char *sys_path )
 	OUTPUT:
 		RETVAL
 
+const char *
+getDevicePath( const char *sys_path )
+	CODE:
+		struct udev *udev = udev_new(); //create new udev object
+		struct udev_device *device;
+
+		//retrieve details from identified device
+		device = udev_device_new_from_syspath( udev, sys_path );
+
+		//retrieve device path
+		const char *path = udev_device_get_property_value( device, "DEVNAME" );
+
+		RETVAL = path;
+
+	OUTPUT:
+		RETVAL
