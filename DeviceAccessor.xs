@@ -4,6 +4,7 @@
 
 #include "ppport.h"
 
+#include <string.h>
 #include <libudev.h>
 
 MODULE = DeviceAccessor		PACKAGE = DeviceAccessor
@@ -44,6 +45,41 @@ getDeviceList()
 		}
 
 		RETVAL = *devices;
+
+	OUTPUT:
+		RETVAL
+
+const char *
+getDeviceName( const char *sys_path )
+	CODE:
+		struct udev *udev = udev_new(); //create new udev object
+		struct udev_device *device;
+		char *name;
+		name = "";
+
+		//retrieve camera details from identified device
+		device = udev_device_new_from_syspath( udev, sys_path );
+
+		//get device's model and vendor information
+		const char *vendor = udev_device_get_property_value( device, "ID_VENDOR" );
+		const char *model = udev_device_get_property_value( device, "ID_MODEL" );
+
+		if( sizeof( vendor ) > 0 || sizeof( model ) > 0 )
+		{
+			int size = sizeof( vendor ) + sizeof( model ) + 2;
+			char name_str[ size ] = "";
+			strcat( name_str, vendor );
+			strcat( name_str, " " );
+			strcat( name_str, model );
+
+			name = name_str;
+		}
+		/*else
+		{
+			name = "";
+		}*/
+
+		RETVAL = name;
 
 	OUTPUT:
 		RETVAL
