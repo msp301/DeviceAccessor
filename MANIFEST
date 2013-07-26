@@ -1,0 +1,8 @@
+Changes
+DeviceAccessor.xs
+Makefile.PL
+MANIFEST
+ppport.h
+README
+t/DeviceAccessor.t
+lib/DeviceAccessor.pm
