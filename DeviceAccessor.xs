@@ -54,30 +54,25 @@ getDeviceName( const char *sys_path )
 	CODE:
 		struct udev *udev = udev_new(); //create new udev object
 		struct udev_device *device;
-		char *name;
-		name = "";
+		char name[ 100 ] = "";
 
 		//retrieve camera details from identified device
 		device = udev_device_new_from_syspath( udev, sys_path );
 
-		//get device's model and vendor information
-		const char *vendor = udev_device_get_property_value( device, "ID_VENDOR" );
-		const char *model = udev_device_get_property_value( device, "ID_MODEL" );
-
-		if( sizeof( vendor ) > 0 || sizeof( model ) > 0 )
+		//ensure the specified device did not exist
+		if( device )
 		{
-			int size = sizeof( vendor ) + sizeof( model ) + 2;
-			char name_str[ size ] = "";
-			strcat( name_str, vendor );
-			strcat( name_str, " " );
-			strcat( name_str, model );
+			//get device's model and vendor information
+			const char *vendor = udev_device_get_property_value( device, "ID_VENDOR" );
+			const char *model = udev_device_get_property_value( device, "ID_MODEL" );
 
-			name = name_str;
+			if( sizeof( vendor ) > 0 || sizeof( model ) > 0 )
+			{
+				strcat( name, vendor );
+				strcat( name, " " );
+				strcat( name, model );
+			}
 		}
-		/*else
-		{
-			name = "";
-		}*/
 
 		RETVAL = name;
 
