@@ -75,6 +75,8 @@ getDeviceName( const char *sys_path )
 		}
 		else
 		{
+			warn( "Device not found from syspath: '%s'", sys_path );
+
 			//return undef when given device does not exist
 			XSRETURN_UNDEF;
 		}
@@ -102,6 +104,8 @@ getDevicePath( const char *sys_path )
 		}
 		else
 		{
+			warn( "Device not found from syspath: '%s'", sys_path );
+
 			//return undef when given device does not exist
 			XSRETURN_UNDEF;
 		}
