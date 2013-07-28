@@ -38,20 +38,22 @@ __END__
 
 =head1 NAME
 
-DeviceAccessor - Perl extension for blah blah blah
+DeviceAccessor - Perl extension for libudev.h
 
 =head1 SYNOPSIS
 
   use DeviceAccessor;
-  blah blah blah
+
+  my @devices = getDeviceList();
+  foreach my $device( @devices )
+  {
+     print getDeviceName( $device );
+  }
 
 =head1 DESCRIPTION
 
-Stub documentation for DeviceAccessor, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
-
-Blah blah blah.
+DeviceAccessor is a perl extension module to provide access to functionality
+provided by libudev.h, allowing for information retrieval of connected devices.
 
 =head2 EXPORT
 
@@ -72,11 +74,11 @@ If you have a web site set up for your module, mention it here.
 
 =head1 AUTHOR
 
-Martin, E<lt>martin@E<gt>
+Martin Pritchard, E<lt>martin@martinpritchard.comE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright (C) 2013 by Martin
+Copyright (C) 2013 by Martin Pritchard
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself, either Perl version 5.14.2 or,
