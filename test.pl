@@ -9,8 +9,14 @@ use DeviceAccessor;
 
 #print DeviceAccessor::hello();
 
-#use Data::Dumper;
-my @devices = DeviceAccessor::getDeviceList();
+use Data::Dumper;
+my @devices = DeviceAccessor::getDeviceList(
+	'block',
+	[ 'partition', '1' ],
+	[ 'ID_BUS', 'usb' ]
+);
+
+print Dumper \@devices;
 
 print "Looking for devices ...\n";
 foreach my $device( @devices )

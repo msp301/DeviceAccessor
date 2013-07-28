@@ -10,7 +10,7 @@
 MODULE = DeviceAccessor		PACKAGE = DeviceAccessor
 
 const char *
-getDeviceList()
+getDeviceList( const char *subsystem, const char *sysattr, const char *property )
 	CODE:
 		const char *devices[10];
 
@@ -20,10 +20,16 @@ getDeviceList()
 		struct udev *udev = udev_new(); //create new udev object
 		enumerate = udev_enumerate_new( udev ); //create device enumerator
 
+		printf( "Sub: %s\n", subsystem );
+		printf( "Attr 1: %s\n", &sysattr[ 0 ] );
+		printf( "Attr 2: %s\n", &sysattr[ 1 ] );
+		printf( "Prop 1: %s\n", &property[ 0 ] );
+		printf( "Prop 2: %s\n", &property[ 1 ] );
+
 		//add given device subsystem filter to find compatible devices
-		udev_enumerate_add_match_subsystem( enumerate, "block" );
-		udev_enumerate_add_match_sysattr( enumerate, "partition", "1" );
-		udev_enumerate_add_match_property( enumerate, "ID_BUS", "usb" );
+		udev_enumerate_add_match_subsystem( enumerate, subsystem );
+		udev_enumerate_add_match_sysattr( enumerate, &sysattr[ 0 ], &sysattr[ 1 ] );
+		udev_enumerate_add_match_property( enumerate, &property[ 0 ], &property[ 1 ] );
 		udev_enumerate_scan_devices( enumerate ); //scan through devices
 		device_entries = udev_enumerate_get_list_entry( enumerate );
 
