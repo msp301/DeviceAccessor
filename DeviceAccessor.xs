@@ -73,6 +73,11 @@ getDeviceName( const char *sys_path )
 				strcat( name, model );
 			}
 		}
+		else
+		{
+			//return undef when given device does not exist
+			XSRETURN_UNDEF;
+		}
 
 		RETVAL = name;
 
@@ -84,12 +89,22 @@ getDevicePath( const char *sys_path )
 	CODE:
 		struct udev *udev = udev_new(); //create new udev object
 		struct udev_device *device;
+		const char *path = "";
 
 		//retrieve details from identified device
 		device = udev_device_new_from_syspath( udev, sys_path );
 
-		//retrieve device path
-		const char *path = udev_device_get_property_value( device, "DEVNAME" );
+		//ensure the specified device did not exist
+		if( device )
+		{
+			//retrieve device path
+			path = udev_device_get_property_value( device, "DEVNAME" );
+		}
+		else
+		{
+			//return undef when given device does not exist
+			XSRETURN_UNDEF;
+		}
 
 		RETVAL = path;
 
