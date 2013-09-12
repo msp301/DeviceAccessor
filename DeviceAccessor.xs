@@ -10,8 +10,9 @@
 MODULE = DeviceAccessor		PACKAGE = DeviceAccessor
 
 const char *
-getDeviceList( const char *subsystem, const char *sysattr, const char *property )
+getDeviceList( const char *subsystem, AV *sysattr, AV *property )
 	CODE:
+		const char *sysattr_str[ av_len( sysattr ) ];
 		const char *devices[10];
 
 		struct udev_list_entry *device_entries, *device;
@@ -20,15 +21,21 @@ getDeviceList( const char *subsystem, const char *sysattr, const char *property 
 		struct udev *udev = udev_new(); //create new udev object
 		enumerate = udev_enumerate_new( udev ); //create device enumerator
 
+		printf( "ATTRS GIVEN = %d\n", av_len( sysattr ) );
+
+		SV *attribute = av_fetch( sysattr, 0, 0 );
+		STRLEN len;
+		char *attr = SvPV( attribute, len );
+
 		printf( "Sub: %s\n", subsystem );
-		printf( "Attr 1: %s\n", &sysattr[ 0 ] );
-		printf( "Attr 2: %s\n", &sysattr[ 1 ] );
-		printf( "Prop 1: %s\n", &property[ 0 ] );
-		printf( "Prop 2: %s\n", &property[ 1 ] );
+		printf( "Attr 1: %s\n", attr );
+		printf( "Attr 2: %s\n", av_fetch( sysattr, 1, 0 ) );
+		printf( "Prop 1: %s\n", av_fetch( property, 0, 0 ) );
+		printf( "Prop 2: %s\n", av_fetch( property, 1, 0 ) );
 
 		//add given device subsystem filter to find compatible devices
 		udev_enumerate_add_match_subsystem( enumerate, subsystem );
-		udev_enumerate_add_match_sysattr( enumerate, &sysattr[ 0 ], &sysattr[ 1 ] );
+		udev_enumerate_add_match_sysattr( enumerate, av_fetch( sysattr, 0, 0 ), av_fetch( sysattr, 1, 0 ) );
 		udev_enumerate_add_match_property( enumerate, &property[ 0 ], &property[ 1 ] );
 		udev_enumerate_scan_devices( enumerate ); //scan through devices
 		device_entries = udev_enumerate_get_list_entry( enumerate );
