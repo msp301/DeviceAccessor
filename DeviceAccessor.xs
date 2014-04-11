@@ -7,10 +7,12 @@
 #include <string.h>
 #include <libudev.h>
 
+#include "xshelper.h"
+
 MODULE = DeviceAccessor		PACKAGE = DeviceAccessor
 
 const char *
-getDeviceList()
+getDeviceList( HV *options )
 	CODE:
 		const char *devices[10];
 
@@ -20,8 +22,14 @@ getDeviceList()
 		struct udev *udev = udev_new(); //create new udev object
 		enumerate = udev_enumerate_new( udev ); //create device enumerator
 
-		//add given device subsystem filter to find compatible devices
-		udev_enumerate_add_match_subsystem( enumerate, "block" );
+		//retrieve and set subsystem filter when provided
+		SV *sys_sv = get_hash_value( options, "subsystem" );
+		if( SvOK( sys_sv ) )
+		{
+			char *sys_c = SvPV_nolen( sys_sv );
+			udev_enumerate_add_match_subsystem( enumerate, sys_c );
+		}
+
 		udev_enumerate_add_match_sysattr( enumerate, "partition", "1" );
 		udev_enumerate_add_match_property( enumerate, "ID_BUS", "usb" );
 		udev_enumerate_scan_devices( enumerate ); //scan through devices

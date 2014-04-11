@@ -10,7 +10,7 @@ use DeviceAccessor;
 #print DeviceAccessor::hello();
 
 #use Data::Dumper;
-my @devices = DeviceAccessor::getDeviceList();
+my @devices = DeviceAccessor::getDeviceList( { subsystem => 'test' } );
 
 print "Looking for devices ...\n";
 foreach my $device( @devices )
