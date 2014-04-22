@@ -30,7 +30,29 @@ getDeviceList( HV *options )
 			udev_enumerate_add_match_subsystem( enumerate, sys_c );
 		}
 
-		udev_enumerate_add_match_sysattr( enumerate, "partition", "1" );
+		//retrieve attributes to apply as filters. These are expected to be
+		//passed as an array reference, so check the given structure correctly
+		//before attempting to apply.
+		SV *attr = get_hash_value( options, "sysattr" );
+		if( SvROK( attr ) &&
+			( SvTYPE( SvRV( attr ) ) == SVt_PVHV ) )
+		{
+			HV *attr_hv = SvRV( attr );
+			HE *entry;
+
+			while( entry = hv_iternext( attr_hv ) )
+			{
+				int *len;
+				SV *value_sv = hv_iterval( attr_hv, entry );
+
+				//retrieve attribute name and its value from hash and include
+				//match in device search
+				char *key = hv_iterkey( entry, &len );
+				char *value = SvPV_nolen( value_sv );
+				udev_enumerate_add_match_sysattr( enumerate, key, value );
+			}
+		}
+
 		udev_enumerate_add_match_property( enumerate, "ID_BUS", "usb" );
 		udev_enumerate_scan_devices( enumerate ); //scan through devices
 		device_entries = udev_enumerate_get_list_entry( enumerate );
