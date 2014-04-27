@@ -11,6 +11,8 @@
 
 MODULE = DeviceAccessor		PACKAGE = DeviceAccessor
 
+PROTOTYPES: ENABLE
+
 AV *
 get_device_list( HV *options )
 	CODE:
