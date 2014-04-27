@@ -12,7 +12,7 @@
 MODULE = DeviceAccessor		PACKAGE = DeviceAccessor
 
 AV *
-getDeviceList( HV *options )
+get_device_list( HV *options )
 	CODE:
 		AV *devices = newAV();
 
@@ -101,7 +101,7 @@ getDeviceList( HV *options )
 		RETVAL
 
 SV *
-getDeviceVendor( SV *sys_path )
+get_device_vendor( SV *sys_path )
 	CODE:
 		struct udev *udev = udev_new(); //create new udev object
 		struct udev_device *device;
@@ -132,7 +132,7 @@ getDeviceVendor( SV *sys_path )
 		RETVAL
 
 SV *
-getDeviceModel( SV *sys_path )
+get_device_model( SV *sys_path )
 	CODE:
 		struct udev *udev = udev_new(); //create new udev object
 		struct udev_device *device;
@@ -163,7 +163,7 @@ getDeviceModel( SV *sys_path )
 		RETVAL
 
 SV *
-getDevicePath( SV *sys_path_sv )
+get_device_path( SV *sys_path_sv )
 	CODE:
 		struct udev *udev = udev_new(); //create new udev object
 		struct udev_device *device;

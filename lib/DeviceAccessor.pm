@@ -44,10 +44,10 @@ DeviceAccessor - Perl extension for libudev.h
 
   use DeviceAccessor;
 
-  my @devices = getDeviceList();
+  my @devices = get_device_list( \%filters );
   foreach my $device( @devices )
   {
-     print getDeviceName( $device );
+     print get_device_name( $device );
   }
 
 =head1 DESCRIPTION
