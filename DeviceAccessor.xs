@@ -55,7 +55,31 @@ getDeviceList( HV *options )
 			}
 		}
 
-		udev_enumerate_add_match_property( enumerate, "ID_BUS", "usb" );
+		//retrieve properties to apply as filters. These are expected to be
+		//passed as a hash reference, so check the given structure correctly
+		//before attempting to apply.
+		SV *property_sv = get_hash_value( options, "property" );
+		if( SvOK( property_sv ) && SvROK( property_sv ) &&
+			( SvTYPE( SvRV( property_sv ) ) == SVt_PVHV ) )
+		{
+			HV *property_hv = (HV*) SvRV( property_sv );
+			HE *entry;
+
+			while( entry = hv_iternext( property_hv ) )
+			{
+				//retrieve property name and its value from hash
+				SV *key_sv = hv_iterkeysv( entry );
+				SV *value_sv = hv_iterval( property_hv, entry );
+
+				//convert property information ready to pass to udev
+				char *key = SvPV_nolen( key_sv );
+				char *value = SvPV_nolen( value_sv );
+
+				//add property setting to udev device search query
+				udev_enumerate_add_match_property( enumerate, key, value );
+			}
+		}
+
 		udev_enumerate_scan_devices( enumerate ); //scan through devices
 		device_entries = udev_enumerate_get_list_entry( enumerate );
 

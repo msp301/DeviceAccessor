@@ -14,6 +14,8 @@ my $devices = DeviceAccessor::getDeviceList( {
 	subsystem => 'block',
 	sysattr => {
 		partition => 1,
+	},
+	property => {
 	}
 } );
 
