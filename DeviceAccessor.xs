@@ -42,13 +42,15 @@ getDeviceList( HV *options )
 
 			while( entry = hv_iternext( attr_hv ) )
 			{
-				int *len;
+				//retrieve attribute name and its value from hash
+				SV *key_sv = hv_iterkeysv( entry );
 				SV *value_sv = hv_iterval( attr_hv, entry );
 
-				//retrieve attribute name and its value from hash and include
-				//match in device search
-				char *key = hv_iterkey( entry, &len );
+				//convert attribute information ready to pass to udev
+				char *key = SvPV_nolen( key_sv );
 				char *value = SvPV_nolen( value_sv );
+
+				//add attribute setting to udev device search query
 				udev_enumerate_add_match_sysattr( enumerate, key, value );
 			}
 		}
