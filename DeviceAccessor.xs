@@ -138,12 +138,12 @@ getDeviceModel( SV *sys_path )
 	OUTPUT:
 		RETVAL
 
-const char *
-getDevicePath( const char *sys_path )
+SV *
+getDevicePath( SV *sys_path_sv )
 	CODE:
 		struct udev *udev = udev_new(); //create new udev object
 		struct udev_device *device;
-		const char *path = "";
+		char *sys_path = SvPV_nolen( sys_path_sv );
 
 		//retrieve details from identified device
 		device = udev_device_new_from_syspath( udev, sys_path );
@@ -152,7 +152,11 @@ getDevicePath( const char *sys_path )
 		if( device )
 		{
 			//retrieve device path
-			path = udev_device_get_property_value( device, "DEVNAME" );
+			const char *path = udev_device_get_property_value( device, "DEVNAME" );
+
+			//convert name to scalar and set as return value
+			SV *path_sv = newSVpv( path, 0 );
+			RETVAL = path_sv;
 		}
 		else
 		{
@@ -161,8 +165,6 @@ getDevicePath( const char *sys_path )
 			//return undef when given device does not exist
 			XSRETURN_UNDEF;
 		}
-
-		RETVAL = path;
 
 	OUTPUT:
 		RETVAL
