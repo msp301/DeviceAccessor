@@ -10,7 +10,7 @@ use DeviceAccessor;
 #print DeviceAccessor::hello();
 
 #use Data::Dumper;
-my @devices = DeviceAccessor::getDeviceList( {
+my $devices = DeviceAccessor::getDeviceList( {
 	subsystem => 'block',
 	sysattr => {
 		partition => 1,
@@ -18,7 +18,7 @@ my @devices = DeviceAccessor::getDeviceList( {
 } );
 
 print "Looking for devices ...\n";
-foreach my $device( @devices )
+foreach my $device( @{ $devices } )
 {
 	next unless( $device );
 	print "Device: $device\n";

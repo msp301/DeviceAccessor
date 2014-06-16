@@ -11,10 +11,10 @@
 
 MODULE = DeviceAccessor		PACKAGE = DeviceAccessor
 
-const char *
+AV *
 getDeviceList( HV *options )
 	CODE:
-		const char *devices[10];
+		AV *devices = newAV();
 
 		struct udev_list_entry *device_entries, *device;
 		struct udev_enumerate *enumerate;
@@ -60,23 +60,18 @@ getDeviceList( HV *options )
 		device_entries = udev_enumerate_get_list_entry( enumerate );
 
 		//retrieve device names from list
-		int i = 0;
 		udev_list_entry_foreach( device, device_entries )
 		{
-			if( i < 10 )
-			{
-				const char *device_path;
+			const char *device_path;
+			device_path = udev_list_entry_get_name( device ); //locate device
 
-				device_path = udev_list_entry_get_name( device ); //locate device
+			SV *device_path_sv = newSVpv( device_path, 0 );
 
-				printf( "Found: %s\n", device_path );
-
-				devices[ i ] = device_path; //add device to devices list
-			}
-			i++;
+			//add device to devices list
+			av_push( devices, device_path_sv );
 		}
 
-		RETVAL = *devices;
+		RETVAL = devices;
 
 	OUTPUT:
 		RETVAL
