@@ -34,10 +34,10 @@ getDeviceList( HV *options )
 		//passed as an array reference, so check the given structure correctly
 		//before attempting to apply.
 		SV *attr = get_hash_value( options, "sysattr" );
-		if( SvROK( attr ) &&
+		if( SvOK( attr ) && SvROK( attr ) &&
 			( SvTYPE( SvRV( attr ) ) == SVt_PVHV ) )
 		{
-			HV *attr_hv = SvRV( attr );
+			HV *attr_hv = (HV*) SvRV( attr );
 			HE *entry;
 
 			while( entry = hv_iternext( attr_hv ) )
