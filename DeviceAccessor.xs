@@ -76,39 +76,64 @@ getDeviceList( HV *options )
 	OUTPUT:
 		RETVAL
 
-const char *
-getDeviceName( const char *sys_path )
+SV *
+getDeviceVendor( SV *sys_path )
 	CODE:
 		struct udev *udev = udev_new(); //create new udev object
 		struct udev_device *device;
-		char name[ 100 ] = "";
+		char *sys_path_c = SvPV_nolen( sys_path );
 
 		//retrieve camera details from identified device
-		device = udev_device_new_from_syspath( udev, sys_path );
+		device = udev_device_new_from_syspath( udev, sys_path_c );
 
 		//ensure the specified device did not exist
 		if( device )
 		{
-			//get device's model and vendor information
+			//get device's vendor information
 			const char *vendor = udev_device_get_property_value( device, "ID_VENDOR" );
-			const char *model = udev_device_get_property_value( device, "ID_MODEL" );
 
-			if( sizeof( vendor ) > 0 || sizeof( model ) > 0 )
-			{
-				strcat( name, vendor );
-				strcat( name, " " );
-				strcat( name, model );
-			}
+			//convert name to scalar and set as return value
+			SV *vendor_sv = newSVpv( vendor, 0 );
+			RETVAL = vendor_sv;
 		}
 		else
 		{
-			warn( "Device not found from syspath: '%s'", sys_path );
+			warn( "Device not found from syspath: '%s'", sys_path_c );
 
 			//return undef when given device does not exist
 			XSRETURN_UNDEF;
 		}
 
-		RETVAL = name;
+	OUTPUT:
+		RETVAL
+
+SV *
+getDeviceModel( SV *sys_path )
+	CODE:
+		struct udev *udev = udev_new(); //create new udev object
+		struct udev_device *device;
+		char *sys_path_c = SvPV_nolen( sys_path );
+
+		//retrieve identified device
+		device = udev_device_new_from_syspath( udev, sys_path_c );
+
+		//ensure the specified device exists
+		if( device )
+		{
+			//get device's model information
+			const char *model = udev_device_get_property_value( device, "ID_MODEL" );
+
+			//convert name to scalar and set as return value
+			SV *model_sv = newSVpv( model, 0 );
+			RETVAL = model_sv;
+		}
+		else
+		{
+			warn( "Device not found from syspath: '%s'", sys_path_c );
+
+			//return undef when given device does not exist
+			XSRETURN_UNDEF;
+		}
 
 	OUTPUT:
 		RETVAL
