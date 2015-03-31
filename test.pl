@@ -32,8 +32,10 @@ foreach my $device( @{ $devices } )
 	print "Device Model: $dev_model\n";
 
 	my $dev_path = DeviceAccessor::get_device_path( $device );
-
 	print "Device Path: $dev_path\n";
+
+	my $type = DeviceAccessor::get_device_property( $device, "DEVTYPE" );
+	print "Device Type: $type\n";
 }
 
 print "Trying fake device ...\n";

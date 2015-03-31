@@ -194,3 +194,36 @@ get_device_path( SV *sys_path_sv )
 
 	OUTPUT:
 		RETVAL
+
+SV *
+get_device_property( SV *sys_path_sv, SV *property_sv )
+	CODE:
+		struct udev *udev = udev_new(); //create new udev object
+		struct udev_device *device;
+		char *sys_path = SvPV_nolen( sys_path_sv );
+		char *property = SvPV_nolen( property_sv );
+
+		//retrieve details from identified device
+		device = udev_device_new_from_syspath( udev, sys_path );
+
+		//ensure the specified device did not exist
+		if( device )
+		{
+			//retrieve device path
+			const char *path = udev_device_get_property_value( device, property );
+
+			//convert property to scalar and set as return value
+			SV *result_sv = newSVpv( path, 0 );
+			RETVAL = result_sv;
+		}
+		else
+		{
+			warn( "Device not found from syspath: '%s'", sys_path );
+
+			//return undef when given device does not exist
+			XSRETURN_UNDEF;
+		}
+
+	OUTPUT:
+		RETVAL
+
